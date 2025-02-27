@@ -25,8 +25,8 @@ public class RedisPerformanceTest {
         long endWithCache = System.currentTimeMillis();
         long durationWithCache = endWithCache - startWithCache;
 
-        System.out.println("Without Redis Cache: " + durationWithoutCache + "ms");
-        System.out.println("With Redis Cache: " + durationWithCache + "ms");
+        System.out.println("Without Redis Cache: " + durationWithoutCache + "ms"); // first time it should bring from database execution time 272 ms
+        System.out.println("With Redis Cache: " + durationWithCache + "ms"); // 2nd time it should bring from cache execution time 17ms
 
         assertTrue(durationWithCache < durationWithoutCache, "Redis should reduce response time");
     }
