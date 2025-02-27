@@ -6,6 +6,9 @@ import com.inventory.api.model.Product;
 import com.inventory.api.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 // import java.util.Optional;
@@ -27,23 +30,27 @@ public class ProductService {
         return new Product(productDTO.getId(), productDTO.getName(), productDTO.getQuantity(), productDTO.getPrice());
     }
 
+    @Cacheable(value = "products") // caches all products
     public List<ProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
+    @Cacheable(value="product", key="#id") // caches individual products by ID
     public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
         return mapToDTO(product);
     }
 
+    @CachePut(value = "product", key = "#result.id") // updates cache when a product is created
     public ProductDTO createProduct(ProductDTO productDTO) {
         Product product = mapToEntity(productDTO);
         Product savedProduct = productRepository.save(product);
         return mapToDTO(savedProduct);
     }
 
+    @CachePut(value = "product", key = "#result.id") // updates cache when a product is created
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
@@ -56,6 +63,7 @@ public class ProductService {
         return mapToDTO(updatedProduct);
     }
 
+    @CacheEvict(value = "product", key = "#id")  // ✅ Removes cache when a product is deleted
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found with ID: " + id);
