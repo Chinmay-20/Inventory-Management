@@ -16,12 +16,12 @@ public class RedisPerformanceTest {
     @Test
     void testGetAllProductsPerformance() {
         long startWithoutCache = System.currentTimeMillis();
-        productService.getAllProducts();  // First call (without cache)
+        productService.getAllProducts(false);  // First call (without cache)
         long endWithoutCache = System.currentTimeMillis();
         long durationWithoutCache = endWithoutCache - startWithoutCache;
 
         long startWithCache = System.currentTimeMillis();
-        productService.getAllProducts();  // Second call (should hit cache)
+        productService.getAllProducts(true);  // Second call (should hit cache)
         long endWithCache = System.currentTimeMillis();
         long durationWithCache = endWithCache - startWithCache;
 

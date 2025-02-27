@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.CacheManager;
 
 import java.util.List;
 // import java.util.Optional;
@@ -19,6 +20,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    
+    @Autowired
+    private CacheManager cachemanager;
 
     // Convert Entity to DTO
     private ProductDTO mapToDTO(Product product) {
@@ -31,7 +35,10 @@ public class ProductService {
     }
 
     @Cacheable(value = "products") // caches all products
-    public List<ProductDTO> getAllProducts() {
+    public List<ProductDTO> getAllProducts(boolean refresh) {
+        if (refresh){
+            cachemanager.getCache("products").clear();
+        }
         List<Product> products = productRepository.findAll();
         return products.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
@@ -43,6 +50,7 @@ public class ProductService {
         return mapToDTO(product);
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     @CachePut(value = "product", key = "#result.id") // updates cache when a product is created
     public ProductDTO createProduct(ProductDTO productDTO) {
         Product product = mapToEntity(productDTO);
@@ -50,6 +58,7 @@ public class ProductService {
         return mapToDTO(savedProduct);
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     @CachePut(value = "product", key = "#result.id") // updates cache when a product is created
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
         Product existingProduct = productRepository.findById(id)

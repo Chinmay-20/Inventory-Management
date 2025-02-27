@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")  // ✅ Allow React frontend
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -17,8 +19,8 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<ProductDTO> getAllProducts() {
-        return productService.getAllProducts();
+    public List<ProductDTO> getAllProducts(@RequestParam(required = false)boolean refresh) {
+        return productService.getAllProducts(refresh);
     }
 
     @GetMapping("/{id}")

@@ -38,7 +38,7 @@ class ProductServiceTest {
     void testGetAllProducts() {
         when(productRepository.findAll()).thenReturn(List.of(testProduct));
 
-        List<ProductDTO> products = productService.getAllProducts();
+        List<ProductDTO> products = productService.getAllProducts(true);
 
         assertFalse(products.isEmpty());
         assertEquals(1, products.size());

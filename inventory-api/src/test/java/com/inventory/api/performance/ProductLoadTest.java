@@ -53,10 +53,10 @@ public class ProductLoadTest {
 
         transactionManager.commit(status);
 
-        int totalProducts = productService.getAllProducts().size();
+        int totalProducts = productService.getAllProducts(true).size();
         System.out.println("Total Products in DB: " + totalProducts);
 
         // Check if 10,000 products exist in DB
-        assertEquals(numProducts, productService.getAllProducts().size());
+        assertEquals(numProducts, productService.getAllProducts(true).size());
     }
 }
