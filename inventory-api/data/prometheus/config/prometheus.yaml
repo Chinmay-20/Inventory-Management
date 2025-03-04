@@ -1,0 +1,16 @@
+scrape_config:
+  - job_name: 'prometheus'
+
+    scrape_interval: 5s
+
+    static_configs:
+      - targets: ['localhost:9090', 'localhost:8080', 'localhost:9100', 'localhost:9113', 'localhost:9000']
+  # node exporter is component you can use to run to get metrics data about particular node. 
+  # prometheus queries data so we assign jobs to it. using scrape_interval it calls endpoint to get information 
+  - job_name: 'Spring Boot Application input'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 2s
+    static_configs:
+      - targets: ['localhost:8080']
+        labels:
+          application: "my spring boot application"

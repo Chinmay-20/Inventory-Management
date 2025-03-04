@@ -269,7 +269,7 @@ public class ProductService {
         Product savedProduct = productRepository.save(product);
 
         // ✅ Publish Event to Kafka
-        kafkaTemplate.send("product-events", savedProduct.getId().toString(), productDTO);
+        kafkaTemplate.send("product-events", savedProduct.getId().toString(), mapToDTO(savedProduct));
         return mapToDTO(savedProduct);
     }
 
