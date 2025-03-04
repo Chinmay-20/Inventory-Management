@@ -186,6 +186,8 @@ brew services start grafana
 - Add **cache hit/miss** logging
 - Track API **response times in production**
 
+
+![Grafana_dashboard_with_multiple queries](final_output.png)
 ---
 
 ## Conclusion
