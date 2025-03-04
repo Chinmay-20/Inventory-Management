@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.CacheManager;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 // import java.util.Optional;
@@ -23,6 +24,9 @@ public class ProductService {
     
     @Autowired
     private CacheManager cachemanager;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     // Convert Entity to DTO
     private ProductDTO mapToDTO(Product product) {
@@ -55,6 +59,9 @@ public class ProductService {
     public ProductDTO createProduct(ProductDTO productDTO) {
         Product product = mapToEntity(productDTO);
         Product savedProduct = productRepository.save(product);
+
+        // kafka code 
+        kafkaTemplate.send("product-events", "Created: " + savedProduct.getId());
         return mapToDTO(savedProduct);
     }
 
@@ -69,6 +76,7 @@ public class ProductService {
         existingProduct.setPrice(productDTO.getPrice());
 
         Product updatedProduct = productRepository.save(existingProduct);
+        kafkaTemplate.send("product-events", "Updated: " + updatedProduct.getId());
         return mapToDTO(updatedProduct);
     }
 
@@ -78,5 +86,7 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with ID: " + id);
         }
         productRepository.deleteById(id);
+
+        kafkaTemplate.send("product-events", "Deleted: " + id);
     }
 }
